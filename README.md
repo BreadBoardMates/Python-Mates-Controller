@@ -1,4 +1,4 @@
-![image](logo.png)
+![image](https://raw.githubusercontent.com/BreadBoardMates/Python-Mates-Controller/main/logo.png)
 
 
 # Python Mates Controller Library
