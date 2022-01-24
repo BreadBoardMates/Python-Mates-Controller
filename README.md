@@ -8,7 +8,7 @@ This is an Python Library developed to be used with Mates Studio's Commander and
 It is used for communicating with BBM Devices, over serial port and contains various methods for sending and retrieving data relating to display widgets, their states and parameters and the health of the controller. Helpful classes and datatypes can be found in `mates.constants` module.
 
 ## Hardware and Software Support
-This library is developed for Python3 and designed to be used with any operating system as long as the it is supported by the `pyserial` library.
+This library is developed for Python3 and designed to be used with any operating system as long as it is supported by the `pyserial` library.
 
 ## Installation
 This library can be installed from the Python Packaging Index by running the command:
