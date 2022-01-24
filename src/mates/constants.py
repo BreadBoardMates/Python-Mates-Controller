@@ -1,6 +1,4 @@
-import enum import Enum
-
-class MatesWidget(Enum):
+class MatesWidget():
     """
     An enumerated class to represent all possible widget types within the BBM ecosystem
 
@@ -180,7 +178,7 @@ class MatesWidget(Enum):
     MATES_FANCY_BUTTON_A = 160
     MATES_FANCY_BUTTON_B = 161
 
-class MatesError(Enum):
+class MatesError():
     """
     An enumerated class representing all possible error states of the
     Python Mates Serial controller.
@@ -204,7 +202,7 @@ class MatesError(Enum):
     MATES_ERROR_COMMAND_TIMEOUT = 2
     MATES_ERROR_RESPONSE_TIMEOUT = 3
 
-class MatesResetMode(Enum):
+class MatesResetMode():
     """
     An enumerated class representing hardware reset configurations
     for the device upon which the Python Mates Serial Controller
@@ -224,7 +222,7 @@ class MatesResetMode(Enum):
     RESET_LOW = 'LOW'
     RESET_HIGH = 'HIGH'
 
-class MatesSwipeConsts(Enum):
+class MatesSwipeConsts():
     """
     An enumerated class representing the possible swipe event checks
 
@@ -282,7 +280,7 @@ class MatesSwipeConsts(Enum):
     MATES_SWIPE_BLTR = 0b0101
     MATES_SWIPE_BRTL = 0b1001
 
-class MatesColorConsts(Enum):
+class MatesColorConsts():
     ALICEBLUE = 0xF7DF
     ANTIQUEWHITE = 0xFF5A
     AQUA = 0x07FF
@@ -424,21 +422,21 @@ class MatesColorConsts(Enum):
     YELLOW = 0xFFE0
     YELLOWGREEN = 0x9E66
 
-class MatesParamsLed(Enum):
+class MatesParamsLed():
     MATES_LED_BEZEL_COLOR_A = 4
     MATES_LED_BEZEL_COLOR_B = 5
     MATES_LED_LED_COLOR_ON = 7
     MATES_LED_LED_COLOR_OFF = 8
     MATES_LED_SHINE_COLOR = 6
 
-class MatesParamRulerGauge(Enum):
+class MatesParamRulerGauge():
     MATES_RULER_GAUGE_BACKGROUND_COLOR = 11
     MATES_RULER_GAUGE_PARTITION_1_COLOR = 12
     MATES_RULER_GAUGE_PARTITION_2_COLOR = 13
     MATES_RULER_GAUGE_PARTITION_3_COLOR = 14
     MATES_RULER_GAUGE_TICK_COLOR = 15
 
-class MatesParamAngularMeter(Enum):
+class MatesParamAngularMeter():
     MATES_ANGULAR_METER_BACKGROUND_COLOR = 11
     MATES_ANGULAR_METER_SCALE_SECTION_1_COLOR = 12
     MATES_ANGULAR_METER_SCALE_SECTION_2_COLOR = 13
@@ -450,7 +448,7 @@ class MatesParamAngularMeter(Enum):
     MATES_ANGULAR_METER_NEEDLE_PIN_DOT_COLOR = 47
     MATES_ANGULAR_METER_CAPTION_COLOR = 23
 
-class MatesParamGaugeA(Enum):
+class MatesParamGaugeA():
     MATES_GAUGE_A_BASE_COLOR = 9
     MATES_GAUGE_A_PARTITION_1_INACTIVE_COLOR = 10
     MATES_GAUGE_A_PARTITION_1_ACTIVE_COLOR = 11
@@ -459,7 +457,7 @@ class MatesParamGaugeA(Enum):
     MATES_GAUGE_A_PARTITION_3_INACTIVE_COLOR = 14
     MATES_GAUGE_A_PARTITION_3_ACTIVE_COLOR = 15
 
-class MatesParamGaugeB(Enum):
+class MatesParamGaugeB():
     MATES_GAUGE_B_BACKGROUND_COLOR = 7
     MATES_GAUGE_B_TRACK_FILL_COLOR_A = 9
     MATES_GAUGE_B_TRACK_FILL_COLOR_B = 8
@@ -467,15 +465,15 @@ class MatesParamGaugeB(Enum):
     MATES_GAUGE_B_MINOR_TICK_COLOR = 15
     MATES_GAUGE_B_FONT_COLOR = 17
 
-class MatesParamLedDigits(Enum):
+class MatesParamLedDigits():
     MATES_LED_DIGITS_SEGMENT_COLOR_ON = 8
     MATES_LED_DIGITS_SEGMENT_COLOR_OFF = 9
 
-class MatesParamLabels(Enum):
+class MatesParamLabels():
     MATES_LABELS_FOREGROUND_COLOR = 5
     MATES_LABELS_BACKGROUND_COLOR = 6
 
-class MatesParamButtonA(Enum):
+class MatesParamButtonA():
     MATES_BUTTON_A_BASE_COLOR_A = 3
     MATES_BUTTON_A_BASE_COLOR_B = 4
     MATES_BUTTON_A_RING_COLOR_OFF = 6
@@ -488,7 +486,7 @@ class MatesParamButtonA(Enum):
     MATES_BUTTON_A_DOT_COLOR_A = 14
     MATES_BUTTON_A_DOT_COLOR_B = 15
 
-class MatesParamSwitchA(Enum):
+class MatesParamSwitchA():
     MATES_SWITCH_A_BEVEL_MAIN_COLOR = 5
     MATES_SWITCH_A_BEVEL_SHADOW_COLOR = 6
     MATES_SWITCH_A_TRACK_COLOR_ON = 9
@@ -496,7 +494,7 @@ class MatesParamSwitchA(Enum):
     MATES_SWITCH_A_LABEL_COLOR_ON = 15
     MATES_SWITCH_A_LABEL_COLOR_OFF = 16
 
-class MatesParamSliderB(Enum):
+class MatesParamSliderB():
     MATES_SLIDER_B_BACKGROUND_COLOR = 7
     MATES_SLIDER_B_TRACK_FILL_COLOR_A = 9
     MATES_SLIDER_B_TRACK_FILL_COLOR_B = 8
@@ -508,7 +506,7 @@ class MatesParamSliderB(Enum):
     MATES_SLIDER_B_KNOB_FACE_COLOR_A = 23
     MATES_SLIDER_B_KNOB_FACE_COLOR_B = 24
 
-class MatesParamKnob(Enum):
+class MatesParamKnob():
     MATES_KNOB_BACKGROUND_COLOR = 11
     MATES_KNOB_KNOB_COLOR = 12
     MATES_KNOB_BEVEL_COLOR_LEFT = 15
@@ -523,7 +521,7 @@ class MatesParamKnob(Enum):
     MATES_KNOB_CAPTION_COLOR = 36
     MATES_KNOB_POINTER_COLOR = 27
 
-class MatesParamMediaLed(Enum):
+class MatesParamMediaLed():
     MATES_MEDIA_LED_BACKGROUND_COLOR = 8
     MATES_MEDIA_LED_BEVEL_COLOR = 6
     MATES_MEDIA_LED_FACE_COLOR = 7
@@ -531,30 +529,30 @@ class MatesParamMediaLed(Enum):
     MATES_MEDIA_LED_LED_COLOR_OFF = 9
     MATES_MEDIA_LED_SYMBOL_COLOR = 12
 
-class MatesParamMediaColorLed(Enum):
+class MatesParamMediaColorLed():
     MATES_MEDIA_COLOR_LED_OUTER_COLOR = 4
     MATES_MEDIA_COLOR_LED_INNER_COLOR = 5
 
-class MatesParamGaugeC(Enum):
+class MatesParamGaugeC():
     MATES_GAUGE_C_BACKGROUND_COLOR = 7
     MATES_GAUGE_C_TRACK_FILL_COLOR_A = 10
     MATES_GAUGE_C_TRACK_FILL_COLOR_B = 9
     MATES_GAUGE_C_TICK_COLOR = 11
     MATES_GAUGE_C_FONT_COLOR = 13
 
-class MatesParamGaugeD(Enum):
+class MatesParamGaugeD():
     MATES_GAUGE_D_BACKGROUND_COLOR = 7
     MATES_GAUGE_D_TRACK_FILL_COLOR_A = 10
     MATES_GAUGE_D_TRACK_FILL_COLOR_B = 9
     MATES_GAUGE_D_TICK_COLOR = 11
     MATES_GAUGE_D_FONT_COLOR = 13
 
-class MatesParamGaugeE(Enum):
+class MatesParamGaugeE():
     MATES_GAUGE_E_BEVEL_COLOR = 7
     MATES_GAUGE_E_TRACK_FILL_COLOR_A = 6
     MATES_GAUGE_E_TRACK_FILL_COLOR_B = 8
 
-class MatesParamGaugeF(Enum):
+class MatesParamGaugeF():
     MATES_GAUGE_F_OUTER_BEVEL_COLOR_A = 6
     MATES_GAUGE_F_OUTER_BEVEL_COLOR_B = 7
     MATES_GAUGE_F_INNER_BEVEL_COLOR_A = 9
@@ -562,13 +560,13 @@ class MatesParamGaugeF(Enum):
     MATES_GAUGE_F_TRACK_FILL_COLOR_A = 13
     MATES_GAUGE_F_TRACK_FILL_COLOR_B = 12
 
-class MatesParamMediaGaugeA(Enum):
+class MatesParamMediaGaugeA():
     MATES_MEDIA_GAUGE_A_BACKGROUND_COLOR = 10
     MATES_MEDIA_GAUGE_A_SCALE_BEVEL_COLOR = 9
     MATES_MEDIA_GAUGE_A_SCALE_BOTTOM_LEFT_FILL_COLOR = 7
     MATES_MEDIA_GAUGE_A_SCALE_TOP_RIGHT_FILL_COLOR = 8
 
-class MatesParamMediaGaugeB(Enum):
+class MatesParamMediaGaugeB():
     MATES_MEDIA_GAUGE_B_NEEDLE_COLOR = 12
     MATES_MEDIA_GAUGE_B_OUTER_BEZEL_COLOR = 4
     MATES_MEDIA_GAUGE_B_INNER_BEZEL_COLOR = 5
@@ -579,22 +577,22 @@ class MatesParamMediaGaugeB(Enum):
     MATES_MEDIA_GAUGE_B_TICK_COLOR = 7
     MATES_MEDIA_GAUGE_B_FONT_COLOR = 8
 
-class MatesParamMediaGaugeC(Enum):
+class MatesParamMediaGaugeC():
     MATES_MEDIA_GAUGE_C_ON_COLOR = 4
     MATES_MEDIA_GAUGE_C_OFF_COLOR = 5
 
-class MatesParamMediaGaugeD(Enum):
+class MatesParamMediaGaugeD():
     MATES_MEDIA_GAUGE_D_ACTIVE_START_COLOR = 4
     MATES_MEDIA_GAUGE_D_ACTIVE_END_COLOR = 5
     MATES_MEDIA_GAUGE_D_INACTIVE_COLOR = 6
 
-class MatesParamMediaThermometer(Enum):
+class MatesParamMediaThermometer():
     MATES_MEDIA_THERMOMETER_BASE_COLOR = 6
     MATES_MEDIA_THERMOMETER_BULB_COLOR = 7
     MATES_MEDIA_THERMOMETER_FONT_COLOR = 9
     MATES_MEDIA_THERMOMETER_SCALE_TICK_COLOR = 8
 
-class MatesParamLedSpectrum(Enum):
+class MatesParamLedSpectrum():
     MATES_LED_SPECTRUM_BASE_COLOR = 11
     MATES_LED_SPECTRUM_PARTITION_1_INACTIVE_COLOR = 12
     MATES_LED_SPECTRUM_PARTITION_1_ACTIVE_COLOR = 13
@@ -603,12 +601,12 @@ class MatesParamLedSpectrum(Enum):
     MATES_LED_SPECTRUM_PARTITION_3_INACTIVE_COLOR = 16
     MATES_LED_SPECTRUM_PARTITION_3_ACTIVE_COLOR = 17
 
-class MatesParamMediaSpectrum(Enum):
+class MatesParamMediaSpectrum():
     MATES_MEDIA_SPECTRUM_ACTIVE_START_COLOR = 6
     MATES_MEDIA_SPECTRUM_ACTIVE_END_COLOR = 7
     MATES_MEDIA_SPECTRUM_INACTIVE_COLOR = 8
 
-class MatesParamButtonB(Enum):
+class MatesParamButtonB():
     MATES_BUTTON_B_BEVEL_COLOR_A = 5
     MATES_BUTTON_B_BEVEL_COLOR_B = 6
     MATES_BUTTON_B_FACE_ON_COLOR = 9
@@ -618,13 +616,13 @@ class MatesParamButtonB(Enum):
     MATES_BUTTON_B_TEXT_OFF_COLOR = 18
     MATES_BUTTON_B_SHINE_COLOR = 13
 
-class MatesParamSwitchB(Enum):
+class MatesParamSwitchB():
     MATES_SWITCH_B_BEVEL_MAIN_COLOR = 5
     MATES_SWITCH_B_BEVEL_SHADOW_COLOR = 10
     MATES_SWITCH_B_LABEL_COLOR_ON = 15
     MATES_SWITCH_B_LABEL_COLOR_OFF = 16
 
-class MatesParamMediaButton(Enum):
+class MatesParamMediaButton():
     MATES_MEDIA_BUTTON_BACKGROUND_COLOR = 8
     MATES_MEDIA_BUTTON_BEVEL_COLOR = 6
     MATES_MEDIA_BUTTON_FACE_COLOR = 7
@@ -632,7 +630,7 @@ class MatesParamMediaButton(Enum):
     MATES_MEDIA_BUTTON_LED_COLOR_OFF = 9
     MATES_MEDIA_BUTTON_SYMBOL_COLOR = 12
 
-class MatesParamSliderA(Enum):
+class MatesParamSliderA():
     MATES_SLIDER_A_BACKGROUND_COLOR = 7
     MATES_SLIDER_A_BORDER_COLOR = 8
     MATES_SLIDER_A_LED_OUTLINE_COLOR_A = 15
@@ -648,7 +646,7 @@ class MatesParamSliderA(Enum):
     MATES_SLIDER_A_KNOB_COLOR_B = 23
     MATES_SLIDER_A_FONT_COLOR = 26
 
-class MatesParamSliderC(Enum):
+class MatesParamSliderC():
     MATES_SLIDER_C_BACKGROUND_COLOR = 7
     MATES_SLIDER_C_KNOB_COLOR = 8
     MATES_SLIDER_C_TRACK_FILL_COLOR_A = 10
@@ -656,7 +654,7 @@ class MatesParamSliderC(Enum):
     MATES_SLIDER_C_TICK_COLOR = 11
     MATES_SLIDER_C_FONT_COLOR = 13
 
-class MatesParamSliderD(Enum):
+class MatesParamSliderD():
     MATES_SLIDER_D_BACKGROUND_COLOR = 7
     MATES_SLIDER_D_KNOB_COLOR = 8
     MATES_SLIDER_D_TRACK_FILL_COLOR_A = 10
@@ -664,13 +662,13 @@ class MatesParamSliderD(Enum):
     MATES_SLIDER_D_TICK_COLOR = 11
     MATES_SLIDER_D_FONT_COLOR = 13
 
-class MatesParamSliderE(Enum):
+class MatesParamSliderE():
     MATES_SLIDER_E_BEVEL_COLOR = 7
     MATES_SLIDER_E_TRACK_FILL_COLOR_A = 6
     MATES_SLIDER_E_TRACK_FILL_COLOR_B = 8
     MATES_SLIDER_E_KNOB_COLOR = 9
 
-class MatesParamSliderF(Enum):
+class MatesParamSliderF():
     MATES_SLIDER_F_OUTER_BEVEL_COLOR_A = 6
     MATES_SLIDER_F_OUTER_BEVEL_COLOR_B = 7
     MATES_SLIDER_F_INNER_BEVEL_COLOR_A = 9
@@ -683,7 +681,7 @@ class MatesParamSliderF(Enum):
     MATES_SLIDER_F_KNOB_FACE_COLOR_B = 18
     MATES_SLIDER_F_KNOB_DOT_COLOR = 20
 
-class MatesParamMediaSlider(Enum):
+class MatesParamMediaSlider():
     MATES_MEDIA_SLIDER_BACKGROUND_COLOR = 10
     MATES_MEDIA_SLIDER_SCALE_BEVEL_COLOR = 9
     MATES_MEDIA_SLIDER_SCALE_BOTTOM_LEFT_FILL_COLOR = 7
@@ -691,7 +689,7 @@ class MatesParamMediaSlider(Enum):
     MATES_MEDIA_SLIDER_KNOB_BEVEL_COLOR = 6
     MATES_MEDIA_SLIDER_KNOB_CENTER_COLOR = 5
 
-class MatesParamMediaRotary(Enum):
+class MatesParamMediaRotary():
     MATES_MEDIA_ROTARY_OUTER_EDGE_COLOR = 5
     MATES_MEDIA_ROTARY_OUTER_RADIUS_COLOR = 6
     MATES_MEDIA_ROTARY_INNER_EDGE_COLOR = 7
@@ -700,7 +698,7 @@ class MatesParamMediaRotary(Enum):
     MATES_MEDIA_ROTARY_INDICATOR_INNER_COLOR = 10
 
 # Here are predefined IDs for widgets
-class MatesWidgetId(Enum):
+class MatesWidgetId():
     # Led List
     Led0 = 0x0000
     Led1 = 0x0001

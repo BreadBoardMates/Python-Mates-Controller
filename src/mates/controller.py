@@ -40,7 +40,7 @@ class MatesController:
     """
 
     MATES_STUDIO_COMPATIBILITY_VERSION = "1.0.8"
-    MATES_CONTROLLER_LIBRARY_VERSION = "1.0.1"
+    MATES_CONTROLLER_LIBRARY_VERSION = "1.0.4"
 
     def __init__(self, portName: str, resetFunction=None, debugStream: io.TextIOWrapper=None, debugFileLength: int=50):
         """
