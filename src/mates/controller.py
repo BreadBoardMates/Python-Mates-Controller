@@ -5,18 +5,23 @@ Module contains various methods for sending and retrieving data
 relating to display widgets, their states and parameters and
 the health of the controller
 """
+
 import ctypes
 import sys
 import struct
-import time
 import typing
 import io
 import serial
-# import gpiozero
+from time import time, sleep
+from PIL import Image
 
 from mates.data import *
 from mates.constants import *
 from mates.commands import MatesCommand
+
+delay = lambda ms: sleep(ms/1000.0)
+delayMicroseconds = lambda us: sleep(us/1000000.0)
+
 
 class MatesController:
     """
@@ -39,8 +44,8 @@ class MatesController:
         - function used to perform a hard reset.
     """
 
-    MATES_STUDIO_COMPATIBILITY_VERSION = "1.0.8"
-    MATES_CONTROLLER_LIBRARY_VERSION = "1.0.4"
+    MATES_STUDIO_COMPATIBILITY_VERSION = "1.0.11"
+    MATES_CONTROLLER_LIBRARY_VERSION = "1.0.5"
 
     def __init__(self, portName: str, resetFunction=None, debugStream: io.TextIOWrapper=None, debugFileLength: int=50):
         """
@@ -161,14 +166,14 @@ class MatesController:
         else:
             self.mates_reset_fnc()
 
-        start_time = time.time()
+        start_time = time()
 
         resp = self.__wait_for_ack(timeout=waitPeriod)
 
         if resp:
-            self.debug.publish_string("Done after {} ms".format((time.time() - start_time) / 1000), termination='\n')
+            self.debug.publish_string("Done after {} ms".format((time() - start_time) / 1000), termination='\n')
         else:
-            self.debug.publish_string("Timed out after {} ms".format((time.time() - start_time) / 1000), termination='\n')
+            self.debug.publish_string("Timed out after {} ms".format((time() - start_time) / 1000), termination='\n')
 
         return resp
 
@@ -190,14 +195,15 @@ class MatesController:
 
         self.__write_command(MatesCommand.MATES_CMD_SYSTEM_RESET)
 
-        start_time = time.time()
+        start_time = time()
 
         resp = self.__wait_for_ack(waitPeriod)
 
         if resp:
-            self.debug.publish_string("Done after {} ms".format((time.time() - start_time) / 1000), termination='\n')
+            self.debug.publish_string("Done after {} ms".format((time() - start_time) / 1000), termination='\n')
         else:
-            self.debug.publish_string("Timed out after {} ms".format((time.time() - start_time) / 1000), termination='\n')
+            self.debug.publish_string("Timed out after {} ms".format((time() - start_time) / 1000), termination='\n')
+        
         return resp
 
     def setBacklight(self, backlightValue: int) -> bool:
@@ -1090,6 +1096,74 @@ class MatesController:
             MatesError response of current error.
         """
         return self.mates_error
+
+    def takeScreenshot(self) -> tuple[bool, Image]:
+        """
+        Sends a serial command to the connected device to request pixel information.
+
+        Args:
+
+            void.
+
+        Returns:
+
+            boolean response indicating command success or failure.
+            Image instance created using the pixel data
+
+        """
+        
+        self.debug.publish_string("Requesting screenshot from module ...")
+
+        self.__write_command(MatesCommand.MATES_CMD_SCREENSHOT)
+
+        resp = self.__wait_for_ack()
+
+        if not resp:
+            return False, None
+        
+        w = self.__read_int16()
+        h = self.__read_int16()
+        chk = w ^ h
+
+        self.debug.publish_string("Expecting a {}x{} image ({} bytes) ...".format(w, h, 2 * w * h))
+
+        image = Image.new("RGB", (w, h))
+
+        pixel_map = image.load()
+
+        for y in range(h):
+            for x in range(w):
+                pixel = self.__read_int16()
+                r = (pixel & 0xF800) >> 8
+                g = (pixel & 0x07E0) >> 3
+                b = (pixel & 0x001F) << 3
+                # pixel_map[x, y] = r << 16 | g << 8 | b
+                pixel_map[x, y] = b << 16 | g << 8 | r
+                chk ^= pixel
+
+        return (chk == self.__read_response()), image
+
+    def saveScreenshot(self, filename) -> bool:
+        """
+        Takes a screenshot and saves it to a file.
+
+        Args:
+
+            filename (str): 
+            - the filename (file path) to use when saving the image file
+
+        Returns:
+
+            boolean response indicating command success or failure.
+
+        """
+
+        res, image = self.takeScreenshot()
+        if not res:
+            return False
+
+        image.save(filename)
+        return True
 
     # private functions below
 

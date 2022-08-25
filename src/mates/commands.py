@@ -61,8 +61,8 @@ class MatesCommand():
     MATES_CMD_APPEND_PRINT_AREA: int
         - commmand sent by controller to append data to a Print Area widget.
 
-    MATES_CMD_PRINT_STRING: int
-        - commmand sent by controller to print a string.
+    MATES_CMD_SCREENSHOT: int
+        - commmand sent by controller to request RAW 16-bit pixel information.
 
     MATES_CMD_SET_WIDGET_32VAL: int
         - commmand sent by controller to change the 32 bit value of compatible widgets.
@@ -93,7 +93,8 @@ class MatesCommand():
     MATES_CMD_NEXT_SWP_EVENT = 0x0010
     MATES_CMD_UPDATE_TEXT_AREA = 0xFFFF
     MATES_CMD_APPEND_PRINT_AREA = 0xFFFE
-    # MATES_CMD_PRINT_STRING = 0xFFFD # not being utilized, might be replaced in the future
+    MATES_CMD_SCREENSHOT = 0xFFFD
     MATES_CMD_SET_WIDGET_32VAL = 0xFFFC
     MATES_CMD_APPEND_SCOPE_DATA = 0xFFFB
     MATES_CMD_UPDATE_DOT_MATRIX = 0xFFFA
+    
