@@ -13,11 +13,12 @@ import typing
 import io
 import serial
 from time import time, sleep
+from typing import Tuple
 from PIL import Image
 
-from mates.data import *
-from mates.constants import *
-from mates.commands import MatesCommand
+from data import *
+from constants import *
+from commands import MatesCommand
 
 delay = lambda ms: sleep(ms/1000.0)
 delayMicroseconds = lambda us: sleep(us/1000000.0)
@@ -44,8 +45,9 @@ class MatesController:
         - function used to perform a hard reset.
     """
 
-    MATES_STUDIO_COMPATIBILITY_VERSION = "1.0.11"
-    MATES_CONTROLLER_LIBRARY_VERSION = "1.0.5"
+    MATES_STUDIO_COMPATIBILITY_VERSION = "1.0.16"
+    MATES_CONTROLLER_LIBRARY_VERSION = "1.0.6"
+
 
     def __init__(self, portName: str, resetFunction=None, debugStream: io.TextIOWrapper=None, debugFileLength: int=50):
         """
@@ -91,6 +93,7 @@ class MatesController:
         self.mates_error = MatesError.MATES_ERROR_NONE
         self.mates_buffer_size = MATES_STRING_BUFFER_SIZE
 
+
     def __del__(self):
         """
         Handles safe destruction of Mates Controller object.
@@ -108,7 +111,8 @@ class MatesController:
         self.serial_port.close()
         self.debug.close_file()
 
-    def begin(self, baudrate: int = 9600):
+
+    def begin(self, baudrate: int = 9600, resetAfterSync: bool=True):
         """
         Begins the serial connection with the specified baudrate
 
@@ -116,7 +120,6 @@ class MatesController:
 
             baudrate: int
                 - the baudrate of the serial port.
-
 
         Returns:
 
@@ -126,7 +129,15 @@ class MatesController:
         self.debug.publish_string("Initializing Serial port {} @ {} baud".format(self.serial_port.port, baudrate), termination='\n')
         self.serial_port.baudrate = baudrate
         self.serial_port.open()
-        self.reset()
+
+        if self.mates_reset_fnc != None:
+            return self.reset()
+        else:
+            if self.sync() and resetAfterSync:
+                return self.softReset()
+            else: 
+                return False                
+
 
     def close(self):
         """
@@ -142,6 +153,7 @@ class MatesController:
         """
         self.debug.publish_string("Closing {} port".format(self.serial_port.port), termination='\n')
         self.serial_port.close()
+
 
     def reset(self, waitPeriod: int=MATES_BOOT_TIMEOUT) -> bool:
         """
@@ -177,6 +189,7 @@ class MatesController:
 
         return resp
 
+
     def softReset(self, waitPeriod: int=MATES_BOOT_TIMEOUT) -> bool:
         """
         Sends a serial command to the connected device to trigger a reset.
@@ -206,6 +219,40 @@ class MatesController:
         
         return resp
 
+
+    def sync(self, resetToPage0: bool=False, timeout: int=MATES_BOOT_TIMEOUT) -> bool:
+        """
+        Attempts to synchronize with the display module by sending simple read page commands
+        at certain interval until a proper response is received
+        """
+        self.debug.publish_string("Synchronizing with the module...")
+
+        page = -1
+        start_time = time()
+
+        while page == -1:
+            if (timeout > 0) and (time() - start_time >= timeout):
+                # Set Error
+                self.debug.publish_string("Timeout Error")
+                return False
+            page = self.getPage(False)
+
+        delay(100)
+
+        self.serial_port.reset_input_buffer()
+
+        page = self.getPage(False)
+
+        if page == -1:
+            self.debug.publish_string("Sync Error")
+            return False
+
+        if resetToPage0:
+            self.setPage(0, False)
+
+        return True
+
+
     def setBacklight(self, backlightValue: int) -> bool:
         """
         Sets the intensity of the backlight of connected device.
@@ -231,7 +278,8 @@ class MatesController:
 
         return resp
 
-    def setPage(self, pageIndex: int) -> bool:
+
+    def setPage(self, pageIndex: int, debugMsgs: bool=True) -> bool:
         """
         Sets the page to be displayed on the connected device.
 
@@ -244,7 +292,8 @@ class MatesController:
 
             boolean response indicating command success or failure.
         """
-        self.debug.publish_string("Navigating to page {} ...".format(pageIndex))
+        if (debugMsgs):
+            self.debug.publish_string("Navigating to page {} ...".format(pageIndex))
 
         self.__check_argument_value('pageIndex', pageIndex,UINT16)
         self.__write_command(MatesCommand.MATES_CMD_SET_PAGE)
@@ -256,7 +305,8 @@ class MatesController:
 
         return resp
 
-    def getPage(self) -> int:
+
+    def getPage(self, debugMsgs: bool=True) -> int:
         """
         Returns the index of the current page displayed by the connected device.
 
@@ -268,11 +318,13 @@ class MatesController:
 
             integer corresponding to current page index.
         """
-        self.debug.publish_string("Querying active page ....")
+        if (debugMsgs):
+            self.debug.publish_string("Querying active page ....")
 
         self.__write_command(MatesCommand.MATES_CMD_GET_PAGE)
 
         return self.__read_response()
+
 
     def setWidgetValueById(self, widgetId: int, value: int) -> bool:
         """
@@ -307,6 +359,7 @@ class MatesController:
 
         return resp
 
+
     def getWidgetValueById(self, widgetId: int) -> int:
         """
         Gets the value of a specific widget based on the provided identifier.
@@ -329,6 +382,7 @@ class MatesController:
         self.__write_int16(widgetId)
 
         return self.__read_response()
+
 
     def setWidgetValueByIndex(self, widgetType: MatesWidget, widgetIndex: int, value: int) -> bool:
         """
@@ -353,6 +407,7 @@ class MatesController:
         """
         return self.setWidgetValueById(self.__getWidgetId(widgetType, widgetIndex), value)
 
+
     def getWidgetValueByIndex(self, widgetType: MatesWidget, widgetIndex: int) -> int:
         """
         Gets the value of a specific widget based on the index within a widget type.
@@ -372,6 +427,7 @@ class MatesController:
         """
         return self.getWidgetValueById(self.__getWidgetId(widgetType, widgetIndex))
 
+
     def setLedDigitsShortValue(self, widgetIndex: int, value: int):
         """
         Sets the value of specifically int16 LED Digits widgets based on the widget index.
@@ -390,6 +446,7 @@ class MatesController:
             boolean response indicating command success or failure.
         """
         return self.setWidgetValueByIndex(MatesWidget.MATES_LED_DIGITS, widgetIndex, value)
+
 
     def setLedDigitsLongValue(self, widgetIndex: int, value: int):
         """
@@ -411,6 +468,7 @@ class MatesController:
         self.__check_argument_value('value', value, INT32)
         return self.__set_widget_value_32bit(self.__getWidgetId(MatesWidget.MATES_LED_DIGITS, widgetIndex), value)
 
+
     def setLedDigitsFloatValue(self, widgetIndex: int, value: float):
         """
         Sets the value of specifically float32 LED Digits widgets based on the widget index.
@@ -430,6 +488,7 @@ class MatesController:
         """
         self.__check_argument_value('value', value, FLOAT32)
         return self.__set_widget_value_32bit(self.__getWidgetId(MatesWidget.MATES_LED_DIGITS, widgetIndex), value)
+
 
     def setSpectrumValue(self, spectrumId: int, gaugeIndex: int, value: int) -> bool:
         """
@@ -458,6 +517,7 @@ class MatesController:
         self.__check_argument_value('value', value, UINT8)
         return self.setWidgetValueById(spectrumId, (gaugeIndex << 8)|value)
 
+
     def setLedSpectrumValue(self, ledSpectrumIndex: int, gaugeIndex: int, value) -> bool:
         """
         Sets the value of specifically LED Spectrum widgets based on the gauge index.
@@ -483,6 +543,7 @@ class MatesController:
         self.__check_argument_value('gaugeIndex', gaugeIndex, UINT8)
         self.__check_argument_value('value', value, UINT8)
         return self.setWidgetValueById(self.__getWidgetId(MatesWidget.MATES_LED_SPECTRUM, ledSpectrumIndex), (gaugeIndex<<8)|value)
+
 
     def setMediaSpectrumValue(self, mediaIndex: int, gaugeIndex: int, value: int) -> bool:
         """
@@ -510,6 +571,7 @@ class MatesController:
         self.__check_argument_value('gaugeIndex', gaugeIndex, UINT8)
         self.__check_argument_value('value', value, UINT8)
         return self.setWidgetValueById(self.__getWidgetId(MatesWidget.MATES_MEDIA_SPECTRUM, mediaIndex), (gaugeIndex<<8)|value)
+
 
     def setWidgetParamById(self, widgetId: int, param: int, value: int) -> bool:
         """
@@ -551,6 +613,7 @@ class MatesController:
 
         return resp
 
+
     def getWidgetParamById(self, widgetId: int, param: int) -> int:
         """
         Gets the value of a widget parameter based on widget id and parameter id.
@@ -580,6 +643,7 @@ class MatesController:
         self.__write_int16(param)
 
         return self.__read_response()
+
 
     def setWidgetParamByIndex(self, widgetType: MatesWidget, widgetIndex: int, param: int, value: int) -> bool:
         """
@@ -612,6 +676,7 @@ class MatesController:
 
         return self.setWidgetParamById(self.__getWidgetId(widgetType, widgetIndex), param, value)
 
+
     def getWidgetParamByIndex(self, widgetType: MatesWidget, widgetIndex: int, param: int) -> int:
         """
         Gets the value of a widget parameter based on widget index and parameter id.
@@ -638,6 +703,7 @@ class MatesController:
 
         return self.getWidgetParamById(self.__getWidgetId(widgetType, widgetIndex), param)
 
+
     def setBufferSize(self, size: int):
         """
         Currently unused (also undocumented).
@@ -657,6 +723,7 @@ class MatesController:
                 .format(size, 1, MATES_STRING_MAX_BUFFER_SIZE))
 
         self.mates_buffer_size = size
+
 
     def clearTextArea(self, textAreaIndex: int) -> bool:
         """
@@ -685,6 +752,7 @@ class MatesController:
         self.debug.end_operation()
 
         return resp
+
 
     def updateTextArea(self, textAreaIndex: int, textFormat: str, *formatArgs) -> bool:
         """
@@ -723,6 +791,7 @@ class MatesController:
 
         return resp
 
+
     def clearPrintArea(self, printAreaIndex: int) -> bool:
         """
         Clears a targeted Print Area.
@@ -749,6 +818,7 @@ class MatesController:
         self.debug.end_operation()
 
         return resp
+
 
     def setPrintAreaColor565(self, printAreaIndex: int, rgb565: int):
         """
@@ -781,6 +851,7 @@ class MatesController:
 
         return resp
         
+
     def setPrintAreaColorRGB(self, printAreaIndex: int, red: int, green: int, blue: int) -> bool:
         """
         Sets the colour of a targeted Print Area.
@@ -816,6 +887,7 @@ class MatesController:
 
         return self.setPrintAreaColor565(printAreaIndex, rgb565)
     
+
     def appendArrayToPrintArea(self, printAreaIndex: int, array) -> bool:
         """
         Appends an array of 8-bit integers to a targeted Print Area.
@@ -890,6 +962,7 @@ class MatesController:
 
         return resp
 
+
     def appendToScopeWidget(self, scopeIndex: int, buffer:typing.List[int]) -> bool:
         """
         Appends a list of integers to a Scope widget.
@@ -922,6 +995,7 @@ class MatesController:
         self.debug.end_operation()
 
         return resp
+
 
     def updateDotMatrixWidget(self, matrixIndex: int, textFormat: str, *formatArgs) -> bool:
         """
@@ -962,6 +1036,7 @@ class MatesController:
 
         return resp
 
+
     def getButtonEventCount(self) -> int:
         """
         Gets the number of events recorded from applicable button widgets.
@@ -980,6 +1055,7 @@ class MatesController:
         self.__write_command(MatesCommand.MATES_CMD_BTN_EVENT_COUNT)
 
         return self.__read_response()
+
 
     def getNextButtonEvent(self) -> int:
         """
@@ -1000,6 +1076,7 @@ class MatesController:
 
         return self.__read_response()        
 
+
     def getSwipeEventCount(self) -> int:
         """
         Gets the number of events recorded from swipe gestures.
@@ -1018,6 +1095,7 @@ class MatesController:
         self.__write_command(MatesCommand.MATES_CMD_SWP_EVENT_COUNT)
 
         return self.__read_response()
+
 
     def getNextSwipeEvent(self) -> int:
         """
@@ -1038,6 +1116,7 @@ class MatesController:
 
         return self.__read_response()        
 
+
     def getVersion(self) -> str:
         """
         Helper function to obtain the version of the Python Mates Controller library.
@@ -1051,6 +1130,7 @@ class MatesController:
             string response of library version.
         """
         return self.MATES_CONTROLLER_LIBRARY_VERSION
+
 
     def getCompatibility(self) -> str:
         """
@@ -1066,6 +1146,7 @@ class MatesController:
             string response of Mates Studio version compatible with this library.
         """
         return self.MATES_STUDIO_COMPATIBILITY_VERSION
+
 
     def printVersion(self) -> str:
         """
@@ -1083,6 +1164,7 @@ class MatesController:
         self.debug.publish_string("Mates Studio - Compatible Version : {} ".format(self.getCompatibility()), termination='\n')
         self.debug.publish_string("Mates Controller - Library Version: {}".format(self.getVersion()), termination='\n')
 
+
     def getError(self) -> MatesError:
         """
         Function to return the current error state of the Mates Controller.
@@ -1097,7 +1179,8 @@ class MatesController:
         """
         return self.mates_error
 
-    def takeScreenshot(self) -> tuple[bool, Image]:
+
+    def takeScreenshot(self) -> Tuple[bool, type(Image)]:
         """
         Sends a serial command to the connected device to request pixel information.
 
@@ -1143,7 +1226,8 @@ class MatesController:
 
         return (chk == self.__read_response()), image
 
-    def saveScreenshot(self, filename) -> bool:
+
+    def saveScreenshot(self, filename: str) -> bool:
         """
         Takes a screenshot and saves it to a file.
 
@@ -1164,6 +1248,7 @@ class MatesController:
 
         image.save(filename)
         return True
+
 
     # private functions below
 
@@ -1233,7 +1318,7 @@ class MatesController:
 
         return int.from_bytes(resp, 'big', signed=True)
 
-    def __read_response(self, timeout:int =MATES_RESPONSE_TIMEOUT) -> int:
+    def __read_response(self, timeout:int=MATES_RESPONSE_TIMEOUT) -> int:
         if not self.__wait_for_ack():
             return -1
 
