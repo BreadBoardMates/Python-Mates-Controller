@@ -46,7 +46,7 @@ class MatesController:
     """
 
     MATES_STUDIO_COMPATIBILITY_VERSION = "1.0.16"
-    MATES_CONTROLLER_LIBRARY_VERSION = "1.0.6"
+    MATES_CONTROLLER_LIBRARY_VERSION = "1.0.7"
 
 
     def __init__(self, portName: str, resetFunction=None, debugStream: io.TextIOWrapper=None, debugFileLength: int=50):
@@ -1400,8 +1400,10 @@ class MatesController:
 
             boolean response indicating command success or failure.
         """
-        self.__check_argument_value('widget_index', widget_index, INT16)
-        return (widget_type << 8) | widget_index
+        self.__check_argument_value('widget_index', widget_index, INT8)
+        value = (widget_type << 8) | widget_index
+        return value if value <= 32767 else value - 65536
+
 
     class __MatesDebug():
         def __init__(self, log_length: int=20, file_stream: io.TextIOWrapper=None ):
