@@ -171,7 +171,7 @@ backlightValue: int
     
 <br/>
 
-#### ***setPage(pageIndex)***
+#### ***setPage(pageIndex, timeout)***
 
 Sets the page to be displayed on the connected device.
 
@@ -179,6 +179,10 @@ Sets the page to be displayed on the connected device.
 pageIndex: int
 
 - index of page to set as current. Value must be within the uint16 datatype range.
+
+timeout: int
+
+- (optional) overrides the default timeout, in case Page needs more time to draw
 
 **Returns**:
 

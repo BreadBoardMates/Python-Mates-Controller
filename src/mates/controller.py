@@ -46,7 +46,7 @@ class MatesController:
     """
 
     MATES_STUDIO_COMPATIBILITY_VERSION = "1.0.16"
-    MATES_CONTROLLER_LIBRARY_VERSION = "1.0.7"
+    MATES_CONTROLLER_LIBRARY_VERSION = "1.0.8"
 
 
     def __init__(self, portName: str, resetFunction=None, debugStream: io.TextIOWrapper=None, debugFileLength: int=50):
@@ -235,20 +235,20 @@ class MatesController:
                 # Set Error
                 self.debug.publish_string("Timeout Error")
                 return False
-            page = self.getPage(False)
+            page = self.__getPage(False)
 
         delay(100)
 
         self.serial_port.reset_input_buffer()
 
-        page = self.getPage(False)
+        page = self.__getPage(False)
 
         if page == -1:
             self.debug.publish_string("Sync Error")
             return False
 
         if resetToPage0:
-            self.setPage(0, False)
+            self.__setPage(0, MATES_RESPONSE_TIMEOUT, False)
 
         return True
 
@@ -279,7 +279,7 @@ class MatesController:
         return resp
 
 
-    def setPage(self, pageIndex: int, debugMsgs: bool=True) -> bool:
+    def setPage(self, pageIndex: int, timeout: int=MATES_RESPONSE_TIMEOUT) -> bool:
         """
         Sets the page to be displayed on the connected device.
 
@@ -287,6 +287,31 @@ class MatesController:
 
             pageIndex: int
                 - index of page to set as current. Value must be within the uint16 datatype range.
+
+            timeout: int
+                - overrides the default timeout, in case Page needs more time to draw
+
+        Returns:
+
+            boolean response indicating command success or failure.
+        """
+        return self.__setPage(pageIndex, timeout)
+
+
+    def __setPage(self, pageIndex: int, timeout: int=MATES_RESPONSE_TIMEOUT, debugMsgs: bool=True) -> bool:
+        """
+        Sets the page to be displayed on the connected device.
+
+        Args:
+
+            pageIndex: int
+                - index of page to set as current. Value must be within the uint16 datatype range.
+
+            timeout: int
+                - overrides the default timeout, in case Page needs more time to draw
+
+            debugMsgs: bool
+                - whether to log messages or skip (typically when syncing)
 
         Returns:
 
@@ -299,14 +324,29 @@ class MatesController:
         self.__write_command(MatesCommand.MATES_CMD_SET_PAGE)
         self.__write_int16(pageIndex)
 
-        resp = self.__wait_for_ack()
+        resp = self.__wait_for_ack(timeout)
 
         self.debug.end_operation()
 
         return resp
 
 
-    def getPage(self, debugMsgs: bool=True) -> int:
+    def getPage(self) -> int:
+        """
+        Returns the index of the current page displayed by the connected device.
+
+        Args:
+
+            void.
+
+        Returns:
+
+            integer corresponding to current page index.
+        """
+        return self.__getPage()
+
+
+    def __getPage(self, debugMsgs: bool=True) -> int:
         """
         Returns the index of the current page displayed by the connected device.
 
@@ -323,7 +363,7 @@ class MatesController:
 
         self.__write_command(MatesCommand.MATES_CMD_GET_PAGE)
 
-        return self.__read_response()
+        return self.__read_response()        
 
 
     def setWidgetValueById(self, widgetId: int, value: int) -> bool:
@@ -785,7 +825,7 @@ class MatesController:
         self.__write_string(text_string)
         self.__write_int8(0)
 
-        resp = self.__wait_for_ack()
+        resp = self.__wait_for_ack(MATES_RESPONSE_LTIMEOUT)
 
         self.debug.end_operation()
 
@@ -916,7 +956,7 @@ class MatesController:
             self.__check_argument_value('print area array item', char, UINT8)
             self.__write_uint8(char)
         
-        resp = self.__wait_for_ack()
+        resp = self.__wait_for_ack(MATES_RESPONSE_LTIMEOUT)
 
         self.debug.end_operation()
 
@@ -956,7 +996,7 @@ class MatesController:
         self.__write_int16(len(text_string))
         self.__write_string(text_string)
 
-        resp = self.__wait_for_ack()
+        resp = self.__wait_for_ack(MATES_RESPONSE_LTIMEOUT)
 
         self.debug.end_operation()
 
@@ -990,7 +1030,7 @@ class MatesController:
         self.__write_int16(len(buffer))
         self.__write_int16_buffer(buffer)
 
-        resp = self.__wait_for_ack()
+        resp = self.__wait_for_ack(MATES_RESPONSE_LTIMEOUT)
 
         self.debug.end_operation()
 
@@ -1030,7 +1070,7 @@ class MatesController:
         self.__write_int16(len(string_to_write))
         self.__write_string(string_to_write)
 
-        resp = self.__wait_for_ack()
+        resp = self.__wait_for_ack(MATES_RESPONSE_LTIMEOUT)
 
         self.debug.end_operation()
 
