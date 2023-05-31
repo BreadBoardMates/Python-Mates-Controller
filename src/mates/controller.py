@@ -16,9 +16,9 @@ from time import time, sleep
 from typing import Tuple
 from PIL import Image
 
-from data import *
-from constants import *
-from commands import MatesCommand
+from mates.data import *
+from mates.constants import *
+from mates.commands import MatesCommand
 
 delay = lambda ms: sleep(ms/1000.0)
 delayMicroseconds = lambda us: sleep(us/1000000.0)
